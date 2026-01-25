@@ -1,5 +1,5 @@
 #define SRAM_START (0x20000000U)
-#define SRAM_SIZE (32U * 1024U)
+#define SRAM_SIZE (36U * 1024U)
 #define SRAM_END (SRAM_START + SRAM_SIZE)
 #define STACK_POINTER_INIT_ADDRESS (SRAM_END)
 
@@ -43,10 +43,10 @@ void usart2_handler(void)			__attribute__((weak, alias("default_handler")));
 void usart3_6_handler(void)		__attribute__((weak, alias("default_handler")));
 
 uint32_t isr_vector[ISR_VECTOR_SIZE_WORDS] __attribute__((section(".isr_vector"))) = {
-	STACK_POINTER_INIT_ADDRESS,
+	STACK_POINTER_INIT_ADDRESS,			// 0x0000 0000
 	(uint32_t) &reset_handler,
 	(uint32_t) &nmi_handler,
-	(uint32_t) &hard_fault_handler,
+	(uint32_t) &hard_fault_handler, // 0x0000 000C
 	0,
 	0,
 	0,
@@ -54,26 +54,26 @@ uint32_t isr_vector[ISR_VECTOR_SIZE_WORDS] __attribute__((section(".isr_vector")
 	0,
 	0,
 	0,
-	(uint32_t) &svc_handler,
+	(uint32_t) &svc_handler,				// 0x0000 002C
 	0,
 	0,
 	(uint32_t) &pendsv_handler,
 	(uint32_t) &systick_handler,
-	(uint32_t) &wwdg_handler,
+	(uint32_t) &wwdg_handler,				// 0x0000 0040
 	0,
 	(uint32_t) &rtc_tamp_handler,
 	(uint32_t) &flash_handler,
 	(uint32_t) &rcc_handler,
 	(uint32_t) &extl0_1_handler,
 	(uint32_t) &extl2_3_handler,
-	(uint32_t) &extl4_15_handler,
+	(uint32_t) &extl4_15_handler,		// 0x0000 005C
 	0,
 	(uint32_t) &dma1_ch1_handler,
 	(uint32_t) &dma1_ch2_3_handler,
 	(uint32_t) &dma1_ch4_7_dma2_ch1_5_handler,
 	(uint32_t) &adc_handler,
 	(uint32_t) &tim1_brk_up_trg_com_handler,
-	(uint32_t) &tim1_cc_handler,
+	(uint32_t) &tim1_cc_handler,		// 0x0000 0078
 	0,
 	(uint32_t) &tim3_4_handler,
 	(uint32_t) &tim6_handler,
@@ -82,13 +82,13 @@ uint32_t isr_vector[ISR_VECTOR_SIZE_WORDS] __attribute__((section(".isr_vector")
 	(uint32_t) &tim15_handler,
 	(uint32_t) &tim16_handler,
 	(uint32_t) &tim17_handler,
-	(uint32_t) &i2c1_handler,
+	(uint32_t) &i2c1_handler,				// 0x0000 009C
 	(uint32_t) &i2c2_3_handler,
 	(uint32_t) &spi1_handler,
 	(uint32_t) &spi2_3_handler,
 	(uint32_t) &usart1_handler,
 	(uint32_t) &usart2_handler,
-	(uint32_t) &usart3_6_handler,
+	(uint32_t) &usart3_6_handler,		// 0x0000 00B4
 	0,
 	0
 };
@@ -111,10 +111,10 @@ void reset_handler(void) {
 
 	// Zero-fill .bss section in SRAM
 	uint32_t bss_size = (uint32_t)&_ebss - (uint32_t)&_sbss;
-	uint8_t *bss_data = (uint8_t*) &_sbss;
+	uint8_t *bss = (uint8_t*) &_sbss;
 
 	for (uint32_t i = 0; i < bss_size; i++) {
-		bss_data[i] = 0;
+		bss[i] = 0;
 	}
 
 	main();
