@@ -1,0 +1,121 @@
+#define SRAM_START (0x20000000U)
+#define SRAM_SIZE (32U * 1024U)
+#define SRAM_END (SRAM_START + SRAM_SIZE)
+#define STACK_POINTER_INIT_ADDRESS (SRAM_END)
+
+#include <stdint.h>
+#define ISR_VECTOR_SIZE_WORDS 47
+
+void reset_handler(void);
+void default_handler(void);
+
+void nmi_handler(void) 				__attribute__((weak, alias("default_handler")));
+void hard_fault_handler(void)	__attribute__((weak, alias("default_handler")));
+void svc_handler(void)				__attribute__((weak, alias("default_handler")));
+void pendsv_handler(void)			__attribute__((weak, alias("default_handler")));
+void systick_handler(void)		__attribute__((weak, alias("default_handler")));
+void wwdg_handler(void)				__attribute__((weak, alias("default_handler")));
+void rtc_tamp_handler(void)		__attribute__((weak, alias("default_handler")));
+void flash_handler(void)			__attribute__((weak, alias("default_handler")));
+void rcc_handler(void)				__attribute__((weak, alias("default_handler")));
+void extl0_1_handler(void)		__attribute__((weak, alias("default_handler")));
+void extl2_3_handler(void)		__attribute__((weak, alias("default_handler")));
+void extl4_15_handler(void)		__attribute__((weak, alias("default_handler")));
+void dma1_ch1_handler(void)		__attribute__((weak, alias("default_handler")));
+void dma1_ch2_3_handler(void)	__attribute__((weak, alias("default_handler")));
+void dma1_ch4_7_dma2_ch1_5_handler(void)	__attribute__((weak, alias("default_handler")));
+void adc_handler(void)				__attribute__((weak, alias("default_handler")));
+void tim1_brk_up_trg_com_handler(void)	__attribute__((weak, alias("default_handler")));
+void tim1_cc_handler(void)		__attribute__((weak, alias("default_handler")));
+void tim3_4_handler(void)			__attribute__((weak, alias("default_handler")));
+void tim6_handler(void)				__attribute__((weak, alias("default_handler")));
+void tim7_handler(void)				__attribute__((weak, alias("default_handler")));
+void tim14_handler(void)			__attribute__((weak, alias("default_handler")));
+void tim15_handler(void)			__attribute__((weak, alias("default_handler")));
+void tim16_handler(void)			__attribute__((weak, alias("default_handler")));
+void tim17_handler(void)			__attribute__((weak, alias("default_handler")));
+void i2c1_handler(void)				__attribute__((weak, alias("default_handler")));
+void i2c2_3_handler(void)			__attribute__((weak, alias("default_handler")));
+void spi1_handler(void)				__attribute__((weak, alias("default_handler")));
+void spi2_3_handler(void)			__attribute__((weak, alias("default_handler")));
+void usart1_handler(void)			__attribute__((weak, alias("default_handler")));
+void usart2_handler(void)			__attribute__((weak, alias("default_handler")));
+void usart3_6_handler(void)		__attribute__((weak, alias("default_handler")));
+
+uint32_t isr_vector[ISR_VECTOR_SIZE_WORDS] = __attribute__((section(".isr_vector"))) = {
+	STACK_POINTER_INIT_ADDRESS,
+	(uint32_t) &reset_handler,
+	(uint32_t) &nmi_handler,
+	(uint32_t) &hard_fault_handler,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	(uint32_t) &svc_handler,
+	0,
+	0,
+	(uint32_t) &pendsv_handler,
+	(uint32_t) &systick_handler,
+	(uint32_t) &wwdg_handler,
+	0,
+	(uint32_t) &rtc_tamp_handler,
+	(uint32_t) &flash_handler,
+	(uint32_t) &rcc_handler,
+	(uint32_t) &extl0_1_handler,
+	(uint32_t) &extl2_3_handler,
+	(uint32_t) &extl4_15_handler,
+	0,
+	(uint32_t) &dma1_ch1_handler,
+	(uint32_t) &dma1_ch2_3_handler,
+	(uint32_t) &dma1_ch4_7_dma2_ch1_5_handler,
+	(uint32_t) &adc_handler,
+	(uint32_t) &tim1_brk_up_trg_com_handler,
+	(uint32_t) &tim1_cc_handler,
+	0,
+	(uint32_t) &tim3_4_handler,
+	(uint32_t) &tim6_handler,
+	(uint32_t) &tim7_handler,
+	(uint32_t) &tim14_handler,
+	(uint32_t) &tim15_handler,
+	(uint32_t) &tim16_handler,
+	(uint32_t) &tim17_handler,
+	(uint32_t) &i2c1_handler,
+	(uint32_t) &i2c2_3_handler,
+	(uint32_t) &spi1_handler,
+	(uint32_t) &spi2_3_handler,
+	(uint32_t) &usart1_handler,
+	(uint32_t) &usart2_handler,
+	(uint32_t) &usart3_6_handler,
+	0,
+	0
+};
+
+void default_handler(void) {
+	while(1);
+}
+
+extern uint32_t _etext, _sdata, _edata, _sbss, _ebss;
+void main(void);
+
+void reset_handler(void) {
+	uint32_t data_size = (uint32_t)&_edata - (uint32_t)&sdata;
+	uint8_t *flash_data = (uint8_t*) &_etext;
+	uint8_t *sram_data = (uint8_t*) &_sdata;
+
+	for (uint32_t i = 0; i < data_size; i++) {
+		sram_data[i] = flash_data[i];
+	}
+
+	// Zero-fill .bss section in SRAM
+	uint32_t bss_size = (uint32_t)&_ebss - (uint32_t)&_sbss;
+	uint8_t *bss_data = (uint8_t*) &_sbss;
+
+	for (uint32_t i = 0; i < bss_size; i++) {
+		bss_data[i] = 0;
+	}
+
+	main();
+}
