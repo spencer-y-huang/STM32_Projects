@@ -4,7 +4,7 @@
 #define STACK_POINTER_INIT_ADDRESS (SRAM_END)
 
 #include <stdint.h>
-#define ISR_VECTOR_SIZE_WORDS 47
+#define ISR_VECTOR_SIZE_WORDS 48
 
 void reset_handler(void);
 void default_handler(void);
@@ -42,7 +42,7 @@ void usart1_handler(void)			__attribute__((weak, alias("default_handler")));
 void usart2_handler(void)			__attribute__((weak, alias("default_handler")));
 void usart3_6_handler(void)		__attribute__((weak, alias("default_handler")));
 
-uint32_t isr_vector[ISR_VECTOR_SIZE_WORDS] = __attribute__((section(".isr_vector"))) = {
+uint32_t isr_vector[ISR_VECTOR_SIZE_WORDS] __attribute__((section(".isr_vector"))) = {
 	STACK_POINTER_INIT_ADDRESS,
 	(uint32_t) &reset_handler,
 	(uint32_t) &nmi_handler,
@@ -101,7 +101,7 @@ extern uint32_t _etext, _sdata, _edata, _sbss, _ebss;
 void main(void);
 
 void reset_handler(void) {
-	uint32_t data_size = (uint32_t)&_edata - (uint32_t)&sdata;
+	uint32_t data_size = (uint32_t)&_edata - (uint32_t)&_sdata;
 	uint8_t *flash_data = (uint8_t*) &_etext;
 	uint8_t *sram_data = (uint8_t*) &_sdata;
 
