@@ -1,0 +1,82 @@
+### GENERAL
+`.` is special - it refers to the current output location counter.
+- since it refers to a location in an output section, must be in a statement in
+	a SECTION command
+- assigning to it _moves_ the current location counter
+	- therefore, the statement `. = ALIGN(4);` moves the current location counter
+		to be aligned with regards to next 4 byte boundary.
+
+This [section](https://ftp.gnu.org/old-gnu/Manuals/ld-2.9.1/html_chapter/ld_3.html#SEC16)
+describes the MEMORY and SECTION outputs.
+
+### MEMORY
+Only one MEMORY command per file.
+
+In short, the MEMORY command allows you to tell the linker what parts
+of memory it can use, and what parts it can't.
+
+So 
+```
+MEMORY 
+{
+	FLASH (rx): ORIGIN = 0x08000000, LENGTH = 128K
+	SRAM (rwx): ORIGIN = 0x20000000, LENGTH = 36K
+}
+```
+tells the linker that there are two chunks of memory it can use.
+* one is named FLASH, is read-only executable, starts at 0x08000000, and is 
+	128KiB long.
+* the other is named SRAM, is read-write executable, starts at 0x20000000, and 
+	is 36KiB long.
+	
+(as an aside, flash vs SRAM)
+SRAM: Static Random Access Memory
+* fast (usually 4x faster than DRAM)
+* expensive
+* volatile, requires power to retain data (flip-flop circuit)
+Flash:
+* fast read, slower write
+* cheap
+* non-volatile
+
+### SECTION
+maps input sections to output sections
+- placement in output section
+- order in output file
+- which output sections
+
+Only one SECTION command per file. As many statements as you want.
+statements can
+- define entry point
+- assign value to a symbol
+- describe placement of named output section + input sections that go into it
+
+```
+SECTIONS
+{
+	.isr_vector :
+	{
+		KEEP(* (.isr_vector))
+	} >FLASH
+```
+
+this is a section definition, specifying the properties of an output section.
+- location
+- alignment
+- contents
+- fill pattern
+- target memory region
+
+this particular output section is named `.isr_vector`.
+`*(.isr_vector)` refers to the section called `.isr_vector` from the _input_ file.
+- the `KEEP` symbol means "keep this section in the output even if it's not
+	referenced anywhere."
+		- why do we need this? Well... the `.isr_vector` is never used by the
+			program itself - but it's used by the microcontroller! how else would 
+			it know to find interrupts?
+
+putting input sections into an output section copies? the data.
+
+`>FLASH` is used in conjunction with the memory regions defined in the MEMORY command.
+it states where the output section should end up.
+

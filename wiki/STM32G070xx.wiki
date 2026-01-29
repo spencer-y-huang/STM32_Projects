@@ -1,0 +1,29 @@
+LQFP64 - pinout? so how it's connected to the board?
+
+Address space is 4 GiB.
+Bytes are little-endian.
+* lowest byte = least significant.
+* highest byte = most significant.
+8 blocks of 512 MiB each.
+
+### Flash
+128 KB.
+not sure what kind - NAND? Does it even matter?
+
+### SRAM
+SRAM can be 32KiB or 36KiB, depending on whether the parity check is enabled. It
+loses 4 KiB because every byte gets one parity bit.
+- parity checked on read, if it fails, a NMI interrupt is produced.
+- if using the parity check, need to initialize the SRAM to 0 - otherwise, can
+	get false-positive parity errors from non-initialized locations
+
+### GPIO
+the STM32G070xx also sets the _starting_ mode of the GPIO registers to
+analog, after reset.
+- this can be found on page 175, section 6.3.1 of the reference manual.
+
+GPIOs are associated with PA, PB, PC, some bytes of PD and PF
+
+### LED
+LD4 is associated with GPIOA, PA5?
+

@@ -1,0 +1,9 @@
+general flow:
+source code -> COMPILER -> object files -> LINKER -> executable
+
+what is an object file?
+- the compiled file. (lol)
+- usually, it's pure machine code.
+- if you pass arguments to the COMPILER, you can get it to produce assembly.
+	- this assembly can then be turned into machine code via an ASSEMBLER.
+
