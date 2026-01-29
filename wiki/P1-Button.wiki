@@ -1,0 +1,12 @@
+user/wake-up button connected to I/O PC13 (pin 3) of microcontroller
+
+where does PC13 map to?
+- immediate guess: GPIO_C, bits 26 + 27
+
+so steps to activate PC13 would be
+- set RCC
+- reset MODER
+- set MODER to input
+- set push-pull pin
+
+then, in the loop, set GPIO_A depending on the value of PC13

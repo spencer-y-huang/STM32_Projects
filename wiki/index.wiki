@@ -1,3 +1,4 @@
 [[Part 1]]
+- [[P1-Button]]
 
 [[STM32G070xx]]
