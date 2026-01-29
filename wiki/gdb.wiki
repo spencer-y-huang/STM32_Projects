@@ -1,0 +1,17 @@
+to get gdb to work:
+
+first set up an openocd connection.
+`openocd -f interface/<interface>.cfg -f target/<target>.cfg`. 
+it should say that it's starting a gdb server.
+
+then start up `gdb-multiarch`.
+`file <program>.elf` read the program file
+`target extended-remote:<gdb port>` connect to the gdb server set up by openocd
+`load` - loads the program
+
+and then it's just gdb things!
+
+note: preprocessor macros are pretty important - otherwise
+you have to examine registers by raw memory address.
+to get the compiler to pass them in debugging info, use the `-gdwarf-2 -g3`
+flags.

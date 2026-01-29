@@ -7,10 +7,10 @@ CPPFLAGS=-DSTM32G070xx \
 LINKER_FILE=linker_script.ld 
 LDFLAGS=-T $(LINKER_FILE) -lgcc
 
-all: timer.elf
+all: ssd.elf
 
-timer.elf: main.o startup.o system_stm32g0xx.o
-	$(CC) $(CFLAGS) $(CPPFLAGS) $^ $(LDFLAGS) -o timer.elf
+ssd.elf: main.o startup.o system_stm32g0xx.o
+	$(CC) $(CFLAGS) $(CPPFLAGS) $^ $(LDFLAGS) -o ssd.elf
 
 main.o: main.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) main.c -c
@@ -35,5 +35,5 @@ clean:
 PROGRAMMER=openocd
 PROGRAMMER_FLAGS=-f interface/stlink.cfg -f target/stm32g0x.cfg
 
-flash: timer.elf
-	$(PROGRAMMER) $(PROGRAMMER_FLAGS) -c "program timer.elf verify reset exit"
+flash: ssd.elf
+	$(PROGRAMMER) $(PROGRAMMER_FLAGS) -c "program ssd.elf verify reset exit"

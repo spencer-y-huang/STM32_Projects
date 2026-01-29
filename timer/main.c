@@ -4,6 +4,11 @@
 #define LED_PIN 5
 
 void main(void) {
+
+	// set hse bypass???? 
+	RCC->CR |= RCC_CR_HSEBYP_Msk | RCC_CR_HSEON_Msk;
+	//while(!(RCC->CR & RCC_CR_HSERDY_Msk));
+
 	// enable GPIO_A clock
 	RCC->IOPENR |= (1 << RCC_IOPENR_GPIOAEN_Pos);
 

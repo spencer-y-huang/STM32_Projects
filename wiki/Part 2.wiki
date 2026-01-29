@@ -1,0 +1,11 @@
+
+
+MCO from ST-LINK: The MCO output of ST-LINK is used as an input clock. This 
+frequency cannot be changed. It is fixed at 8 MHz and connected to the PF0-OSC_IN 
+of the STM32 microcontroller. The configuration must be:
+– SB17 ON
+– SB25 and SB27 OFF
+– R33 and R34 OFF
+
+note: the things on the back of the board - SB17 looks disconnected and 
+	SB25, SB27 look connected - does this mean that I can't use MCO????

@@ -1,4 +1,6 @@
 [[Part 1]]
 - [[P1-Button]]
+[[Part 2]]
 
 [[STM32G070xx]]
+[[gdb]]
