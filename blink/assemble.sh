@@ -1,1 +1,1 @@
-arm-none-eabi-gcc -S -fverbose-asm -O2 main.c startup.c
+arm-none-eabi-gcc -S -fverbose-asm main.c startup.c

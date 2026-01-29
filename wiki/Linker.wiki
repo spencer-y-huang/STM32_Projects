@@ -37,6 +37,7 @@ SRAM: Static Random Access Memory
 Flash:
 * fast read, slower write
 * cheap
+* can only delete chunks - usually at least 4KB!
 * non-volatile
 
 ### SECTION
@@ -50,6 +51,8 @@ statements can
 - define entry point
 - assign value to a symbol
 - describe placement of named output section + input sections that go into it
+
+`ENTRY(reset_handler)` - this defines the entry point for the program!
 
 ```
 SECTIONS
@@ -78,5 +81,13 @@ this particular output section is named `.isr_vector`.
 putting input sections into an output section copies? the data.
 
 `>FLASH` is used in conjunction with the memory regions defined in the MEMORY command.
-it states where the output section should end up.
+it states where the output section should end up. (relocation address?)
 
+`AT> FLASH` lets you specify a load address. by default the load address is the
+same as the relocation address.
+
+So the statement
+`>SRAM AT> FLASH` indications that the section should have the memory address associated
+with `SRAM` - but since `SRAM` is volatile, it needs to be stored in `FLASH`.
+- `startup.c` copies that section from `FLASH` to `SRAM` before the program
+	starts fully running.

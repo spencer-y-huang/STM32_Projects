@@ -1,0 +1,9 @@
+### Input
+pull-up resistor: set GPIO voltage to a higher voltage when not connected to something else
+- high voltage source + resistor - source ensures high voltage, resistor
+	prevents short circuit (resistor is usually ~10k ohms, voltage ~3V?)
+	- larger resistor -> less responsive (because voltage takes longer to change)
+floating: a state of undefined voltage. not great for trying to read input.
+	
+also look at [this](https://learn.sparkfun.com/tutorials/pull-up-resistors)
+

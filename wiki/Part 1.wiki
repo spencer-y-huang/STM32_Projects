@@ -12,4 +12,4 @@ Tutorial link: https://kleinembedded.com/stm32-without-cubeide-part-1-the-bare-n
 [[Compilation]]
 [[Linker]]
 [[Startup]]
-
+[[GPIO]]
