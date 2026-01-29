@@ -1,0 +1,13 @@
+Tutorial link: https://kleinembedded.com/stm32-without-cubeide-part-1-the-bare-necessities/
+
+Notes: the STM32G070RB also sets the _starting_ mode of the GPIO registers to
+analog, after reset.
+- this can be found on page 175, section 6.3.1 of the reference manual.
+
+### Todo list
+- [ ] explore linker script
+- [ ] explore startup code
+- [ ] explore GPIO specifics
+	- [ ] 
+
+
