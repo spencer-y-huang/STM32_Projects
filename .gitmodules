@@ -1,0 +1,12 @@
+[submodule "vendor/stm32g0xx-hal-driver"]
+	path = vendor/stm32g0xx-hal-driver
+	url = git@github.com:STMicroelectronics/stm32g0xx-hal-driver.git
+[submodule "vendor/cmsis-device-g0"]
+	path = vendor/cmsis-device-g0
+	url = git@github.com:STMicroelectronics/cmsis-device-g0.git
+[submodule "vendor/STM32CubeG0"]
+	path = vendor/STM32CubeG0
+	url = git@github.com:STMicroelectronics/STM32CubeG0.git
+[submodule "vendor/CMSIS_6"]
+	path = vendor/CMSIS_6
+	url = git@github.com:ARM-software/CMSIS_6.git
