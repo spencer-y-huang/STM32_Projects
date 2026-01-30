@@ -23,7 +23,27 @@ analog, after reset.
 - this can be found on page 175, section 6.3.1 of the reference manual.
 
 GPIOs are associated with PA, PB, PC, some bytes of PD and PF
+PA-PC all have 16 associated ports. (Px0-Px15).
 
 ### LED
-LD4 is associated with GPIOA, PA5?
+LD4 is associated with GPIOA, PA5
 
+### USER BUTTON
+user button is associated with GPIOC, PC13
+
+### TIMERs
+Several timers are included
+- TIM14 is a general purpose timer that can be used for a lot of things, with
+	its own NVIC interrupt entry
+
+There are a few configuration options, but the two most visible ones are the
+prescaler (TIMx->PSC) and autoreload (TIMx->ARR).
+* prescaler lets you configure how frequently the counter in the timer ticks up.
+* autoreload register lets you configure at what counter value the timer resets
+and sends an update event.
+
+you need to do more than just enable the timer, though, you need to set up
+interrupts.
+this can be done with (TIMx->DIER).
+when an interrupt is triggered, (TIMx->SR) will be set - you need to clear
+this in software or else it'll trigger again.
