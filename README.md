@@ -6,6 +6,7 @@ from the Klein Embedded blog.
 also looking at [this tutorial](https://embedded.fm/blog/ese101) for some
 additional conext - even though it's a different architecture/chip, it still covers the
 low-level stuff
+
 another [tutorial](https://vivonomicon.com/category/stm32_baremetal_examples/page/2/) - more data points aren't
 bad, especially since I'm being insanely stubborn and not using CubeMX
 
