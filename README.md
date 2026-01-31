@@ -1,4 +1,4 @@
-Projects using the STM32 NUCLE-G070RB board.
+Projects using the STM32 NUCLEO-G070RB board.
 
 * [X] blink - very simple LED blink program
 * [X] button - when the user button is pressed, activate the LED.
@@ -6,6 +6,7 @@ Projects using the STM32 NUCLE-G070RB board.
 	* [X] Blinks faster when the button is held down.
 	* [X] Use interrupts tied into the button to change the timer interval.
 	* [ ] Implement debouncing for the button interrupt.
+	* [ ] Properly configure PLL to set clock speed to max
 * [ ] UART - implement UART tutorial to allow board to send messages to host PC
 * [.] ssd - use a Diligent PmodSSD seven segment display
 	* [X] can turn on segments of display
