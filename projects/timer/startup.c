@@ -18,9 +18,9 @@ void wwdg_handler(void)				__attribute__((weak, alias("default_handler")));
 void rtc_tamp_handler(void)		__attribute__((weak, alias("default_handler")));
 void flash_handler(void)			__attribute__((weak, alias("default_handler")));
 void rcc_handler(void)				__attribute__((weak, alias("default_handler")));
-void extl0_1_handler(void)		__attribute__((weak, alias("default_handler")));
-void extl2_3_handler(void)		__attribute__((weak, alias("default_handler")));
-void extl4_15_handler(void)		__attribute__((weak, alias("default_handler")));
+void exti0_1_handler(void)		__attribute__((weak, alias("default_handler")));
+void exti2_3_handler(void)		__attribute__((weak, alias("default_handler")));
+void exti4_15_handler(void)		__attribute__((weak, alias("default_handler")));
 void dma1_ch1_handler(void)		__attribute__((weak, alias("default_handler")));
 void dma1_ch2_3_handler(void)	__attribute__((weak, alias("default_handler")));
 void dma1_ch4_7_dma2_ch1_5_handler(void)	__attribute__((weak, alias("default_handler")));
@@ -64,9 +64,9 @@ uint32_t isr_vector[ISR_VECTOR_SIZE_WORDS] __attribute__((section(".isr_vector")
 	(uint32_t) &rtc_tamp_handler,
 	(uint32_t) &flash_handler,
 	(uint32_t) &rcc_handler,
-	(uint32_t) &extl0_1_handler,
-	(uint32_t) &extl2_3_handler,
-	(uint32_t) &extl4_15_handler,		// 0x0000 005C
+	(uint32_t) &exti0_1_handler,
+	(uint32_t) &exti2_3_handler,
+	(uint32_t) &exti4_15_handler,		// 0x0000 005C
 	0,
 	(uint32_t) &dma1_ch1_handler,
 	(uint32_t) &dma1_ch2_3_handler,

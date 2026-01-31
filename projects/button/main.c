@@ -36,8 +36,8 @@ void main(void) {
 
 	// dummy reads
 	volatile uint32_t* dummy;
-	dummy = *(RCC_AHBIOENR);
-	dummy = *(RCC_AHBIOENR);
+	dummy = (volatile uint32_t*) *(RCC_AHBIOENR);
+	dummy = (volatile uint32_t*) *(RCC_AHBIOENR);
 
 	// Reset the mode of PA5
 	*GPIOA_MODER &= ~(0x3 << GPIO_MODER_MODER5);

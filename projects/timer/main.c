@@ -9,18 +9,26 @@ void main(void) {
 	// Enable TIM14 clock
 	RCC->APBENR2 |= (1 << RCC_APBENR2_TIM14EN_Pos);
 
-	// Enable NVIC interrupt for TIM14_IRQn
-	NVIC_SetPriority(TIM14_IRQn, 0x03);
-	NVIC_EnableIRQ(TIM14_IRQn);
-
 	// enable GPIO_A, GPIO_C clock
 	RCC->IOPENR |= (1 << RCC_IOPENR_GPIOAEN_Pos);
 	RCC->IOPENR |= (1 << RCC_IOPENR_GPIOCEN_Pos);
 
-	// dummy reads - this required by errata, but that was for a different board
-	volatile uint32_t* dummy;
-	dummy = (volatile uint32_t*) RCC->IOPENR;
-	dummy = (volatile uint32_t*) RCC->IOPENR;
+	// Link PC13 to EXTI13
+	EXTI->EXTICR[3] &= ~(0x7 << EXTI_EXTICR4_EXTI13_Pos);
+	EXTI->EXTICR[3] |= (0x2 << EXTI_EXTICR4_EXTI13_Pos);
+
+	// enable rising/falling triggers on EXTI13
+	EXTI->RTSR1 |= (1 << EXTI_RTSR1_RT13_Pos);
+	EXTI->FTSR1 |= (1 << EXTI_FTSR1_FT13_Pos);
+
+	// enable interrupt on EXTI13
+	EXTI->IMR1 |= (1 << EXTI_IMR1_IM13_Pos);
+
+	// Enable NVIC interrupt for TIM14, EXTI4_15
+	NVIC_SetPriority(TIM14_IRQn, 0x03);
+	NVIC_EnableIRQ(TIM14_IRQn);
+	NVIC_SetPriority(EXTI4_15_IRQn, 0x02);
+	NVIC_EnableIRQ(EXTI4_15_IRQn);
 
 	// Reset the mode of PA5
 	GPIOA->MODER &= ~(0x3 << GPIO_MODER_MODE5_Pos);
@@ -34,20 +42,7 @@ void main(void) {
 
 	start_timer();
 
-	int prev_pressed = 0;
-	while(1) { 
-		// while the button is depressed - the timer will blink four times as fast
-		int pressed = ~(GPIOC->IDR >> GPIO_IDR_ID13_Pos) & 1;
-		if (prev_pressed != pressed) {
-			prev_pressed = pressed;
-			if (pressed) {
-				TIM14->ARR = 250; // 0.25 seconds
-			} else {
-				TIM14->ARR = 1000; // 1 second
-			}
-			TIM14->EGR |= TIM_EGR_UG;
-		}
-	}
+	while(1) { }
 }
 
 // for now, hardcoded to use TIM14
@@ -86,4 +81,20 @@ void tim14_handler(void) {
 		// toggle the LED output pin
 		GPIOA->ODR ^= (1 << LED_PIN);
 	}
+}
+
+void exti4_15_handler(void) {
+
+	if (EXTI->FPR1 & EXTI_FPR1_FPIF13) {
+		// reset the interrupt
+		EXTI->FPR1 |= (EXTI_FPR1_FPIF13);
+		TIM14->ARR = 250; // 0.25 seconds
+	} else if (EXTI->RPR1 & EXTI_RPR1_RPIF13) {
+		// reset the interrupt
+		EXTI->RPR1 |= ~(EXTI_RPR1_RPIF13);
+		TIM14->ARR = 1000; // 1 second
+	}
+
+	// reset the timer
+	TIM14->EGR |= TIM_EGR_UG;
 }
