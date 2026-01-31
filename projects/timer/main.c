@@ -19,8 +19,8 @@ void main(void) {
 
 	// dummy reads - this required by errata, but that was for a different board
 	volatile uint32_t* dummy;
-	dummy = RCC->IOPENR;
-	dummy = RCC->IOPENR;
+	dummy = (volatile uint32_t*) RCC->IOPENR;
+	dummy = (volatile uint32_t*) RCC->IOPENR;
 
 	// Reset the mode of PA5
 	GPIOA->MODER &= ~(0x3 << GPIO_MODER_MODE5_Pos);
