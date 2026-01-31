@@ -2,9 +2,9 @@ Projects using the STM32 NUCLE-G070RB board.
 
 * [X] blink - very simple LED blink program
 * [X] button - when the user button is pressed, activate the LED.
-* [.] timer - blink, but using a timer interrupt than a while loop. 
+* [o] timer - blink, but using a timer interrupt than a while loop. 
 	* [X] Blinks faster when the button is held down.
-	* [ ] Use interrupts tied into the button to change the timer interval.
+	* [X] Use interrupts tied into the button to change the timer interval.
 	* [ ] Implement debouncing for the button interrupt.
 * [ ] UART - implement UART tutorial to allow board to send messages to host PC
 * [.] ssd - use a Diligent PmodSSD seven segment display
@@ -24,7 +24,7 @@ using [a tutorial](https://kleinembedded.com/stm32-without-cubeide-part-1-the-ba
 from the Klein Embedded blog.
 
 also looking at [this tutorial](https://embedded.fm/blog/ese101) for some
-additional conext - even though it's a different architecture/chip, it still covers the
+additional context - even though it's a different architecture/chip, it still covers the
 low-level stuff
 
 another [tutorial](https://vivonomicon.com/category/stm32_baremetal_examples/page/2/) - more data points aren't

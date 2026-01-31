@@ -42,7 +42,7 @@ void main(void) {
 
 	start_timer();
 
-	while(1) { }
+	while(1) {};
 }
 
 // for now, hardcoded to use TIM14
