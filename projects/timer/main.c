@@ -11,11 +11,11 @@ void main(void) {
 	// Target: 64 MHz (the maximum for this chip)
 	
 	// set wait states for flash (need 2 for 64 MHz)
-	FLASH->ACR->LATENCY &= (~FLASH_ACR_LATENCY_MSK);
-	FLASH->ACR->LATENCY |= FLASH_ACR_LATENCY_2;
+	FLASH->ACR &= (~FLASH_ACR_LATENCY_Msk);
+	FLASH->ACR |= FLASH_ACR_LATENCY_2;
 
 	// set instruction prefetch
-	FLASH->ACR->PRFTEN |= FLASH_ACR_PRFTEN;
+	FLASH->ACR |= FLASH_ACR_PRFTEN;
 
 	// disable PLL clock
 	RCC->CR &= ~RCC_CR_PLLON;
@@ -24,13 +24,23 @@ void main(void) {
 
 	// Set PLL parameters
 	RCC->PLLCFGR |= RCC_PLLCFGR_PLLSRC_HSI;				// use HSI as input to PLL
-	RCC->PLLCFGR |= 0x8 << RCC_PLLCFGR_PLLN_Pos;  // PLL - mult. by 4
-	RCC->PLLCFGR |= 0x1 << RCC_PLLCFGR_PLLM_Pos;	// PLL - div. by 2
+	RCC->PLLCFGR |= 0x1 << RCC_PLLCFGR_PLLM_Pos;	// PLLM - div. by 2
+	RCC->PLLCFGR |= 0x10 << RCC_PLLCFGR_PLLN_Pos; // PLLN - mult. by 16
+
+	RCC->PLLCFGR |= RCC_PLLCFGR_PLLR_0; 					// PLLR - div. by 2
 	
 	// enable PLL clock
 	RCC->CR |= RCC_CR_PLLON;
-	// enable PLLR as system clock
+	// wait until PLL is on
+	while (!(RCC->CR & RCC_CR_PLLRDY));
+
+	// enable PLLR clock output
 	RCC->PLLCFGR |= RCC_PLLCFGR_PLLREN;
+	// enable PLLR as system clock
+	RCC->CFGR |= RCC_CFGR_SW_PLLRCLK;
+
+	// wait until PLLR is used as clock
+	while (!(RCC->CFGR & RCC_CFGR_SWS_PLLRCLK));
 
 	// Enable TIM14 clock
 	RCC->APBENR2 |= (1 << RCC_APBENR2_TIM14EN_Pos);
@@ -81,7 +91,7 @@ void start_timer(void) {
 	RCC->APBRSTR2 &= ~(RCC_APBRSTR2_TIM14RST);
 
 	// set prescaler/autoreload registers
-	TIM14->PSC = 16000000/1000; // defaults to HSI which is 16 MHz
+	TIM14->PSC = 64000000/1000; // with system clock modification, now 64 MHz
 	TIM14->ARR = 1000; // 1 second
 
 	// set update event to reset timer
