@@ -6,6 +6,32 @@
 void start_timer(void);
 
 void main(void) {
+
+	// Configure MCU clock
+	// Target: 64 MHz (the maximum for this chip)
+	
+	// set wait states for flash (need 2 for 64 MHz)
+	FLASH->ACR->LATENCY &= (~FLASH_ACR_LATENCY_MSK);
+	FLASH->ACR->LATENCY |= FLASH_ACR_LATENCY_2;
+
+	// set instruction prefetch
+	FLASH->ACR->PRFTEN |= FLASH_ACR_PRFTEN;
+
+	// disable PLL clock
+	RCC->CR &= ~RCC_CR_PLLON;
+	// wait until PLL is stopped
+	while (RCC->CR & RCC_CR_PLLRDY);
+
+	// Set PLL parameters
+	RCC->PLLCFGR |= RCC_PLLCFGR_PLLSRC_HSI;				// use HSI as input to PLL
+	RCC->PLLCFGR |= 0x8 << RCC_PLLCFGR_PLLN_Pos;  // PLL - mult. by 4
+	RCC->PLLCFGR |= 0x1 << RCC_PLLCFGR_PLLM_Pos;	// PLL - div. by 2
+	
+	// enable PLL clock
+	RCC->CR |= RCC_CR_PLLON;
+	// enable PLLR as system clock
+	RCC->PLLCFGR |= RCC_PLLCFGR_PLLREN;
+
 	// Enable TIM14 clock
 	RCC->APBENR2 |= (1 << RCC_APBENR2_TIM14EN_Pos);
 
