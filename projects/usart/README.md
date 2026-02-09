@@ -35,7 +35,8 @@ default for STM32070RB seems different...
 - 8 bits per byte
 - 1 "start" bit
 - no parity checks
-- n "stop" bits - this needs to be set in USART2_CR1 through setting word length
+- n "stop" bits - this needs to be set in USART2_CR2 
+	- default is 1 stop bit!
 - FIFO or not? (default: not FIFO)
 
 section 26.5.5 in the reference manual seems to describe some of this
