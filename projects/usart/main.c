@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stdio.h>
 #include "stm32g0xx.h"
 
 #define LED_PIN 5
@@ -6,9 +7,9 @@
 void start_timer(void);
 
 // Configure MCU clock
-// Target: 64 MHz (for nice UART communication)
+// Target: 64 MHz 
 void setup_clock(void) {
-	// set wait states for flash (need 1 for 48 MHz)
+	// set wait states for flash (need 2 for 64 MHz)
 	FLASH->ACR &= (~FLASH_ACR_LATENCY_Msk);
 	FLASH->ACR |= FLASH_ACR_LATENCY_2;
 
@@ -22,11 +23,11 @@ void setup_clock(void) {
 
 	// Set PLL parameters
 	RCC->PLLCFGR |= RCC_PLLCFGR_PLLSRC_HSI;				// use HSI as input to PLL - 16 MHz
-	RCC->PLLCFGR |= 1  << RCC_PLLCFGR_PLLM_Pos;		// PLLM - div. by 2 - now 8 MHz
+	RCC->PLLCFGR |= 0x1 << RCC_PLLCFGR_PLLM_Pos;		// PLLM - div. by 2 - now 8 MHz
 	RCC->PLLCFGR &= ~RCC_PLLCFGR_PLLN;
 	RCC->PLLCFGR |= 0x10 << RCC_PLLCFGR_PLLN_Pos;		// PLLN - mult. by 16 - now 128 Mhz
 
-	RCC->PLLCFGR |= 1 << RCC_PLLCFGR_PLLR_Pos; 			// PLLR - div. by 2 - now 64 MHz
+	RCC->PLLCFGR |= RCC_PLLCFGR_PLLR_0; 			// PLLR - div. by 2 - now 64 MHz
 	
 	// enable PLL clock
 	RCC->CR |= RCC_CR_PLLON;
@@ -43,7 +44,7 @@ void setup_clock(void) {
 }
 
 void main(void) {
-	//setup_clock();
+	setup_clock();
 
 	// set USART2 to use SYSCLK
 	RCC->CCIPR |= (1 << RCC_CCIPR_USART2SEL_Pos);
@@ -77,8 +78,8 @@ void main(void) {
 	GPIOA->OSPEEDR &= ~(0x3 << GPIO_OSPEEDR_OSPEED2_Pos);
 	GPIOA->OSPEEDR &= ~(0x3 << GPIO_OSPEEDR_OSPEED3_Pos);
 
-	//uint16_t uartdiv = 48000000 / 9600;
-	uint16_t uartdiv = 16000000 / 9600;
+	uint16_t uartdiv = 64000000 / 9600;
+	//uint16_t uartdiv = 16000000 / 9600;
 	// set USART2 baud rate
 	USART2->BRR = uartdiv;
 
@@ -88,16 +89,16 @@ void main(void) {
 	// handle transmit enable (?)
 	USART2->CR1 |= USART_CR1_TE;
 	USART2->CR1 &= ~USART_CR1_TE;
-	while(!(USART2->ISR & USART_ISR_TEACK));
+	//while(!(USART2->ISR & USART_ISR_TEACK));
 	USART2->CR1 |= USART_CR1_TE;
+
+	GPIOA->ODR ^= (1 << 5);
 
 	char rxb = '\0';
 	while(1) {
 		while(!(USART2->ISR & USART_ISR_RXNE_RXFNE));
 		rxb = USART2->RDR;
 		GPIOA->ODR ^= (1 << 5);
-		while(!(USART2->ISR & USART_ISR_TXE_TXFNF));
-		USART2->TDR = rxb;
-		while(!(USART2->ISR & USART_ISR_TC));
+		printf("RX: %c\r\n", rxb);
 	};
 }

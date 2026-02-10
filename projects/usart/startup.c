@@ -97,12 +97,13 @@ void default_handler(void) {
 	while(1);
 }
 
-extern uint32_t _etext, _sdata, _edata, _sbss, _ebss;
+extern uint32_t _sdata, _edata, _sbss, _ebss, _sidata;
 void main(void);
+void __libc_init_array();
 
 void reset_handler(void) {
 	uint32_t data_size = (uint32_t)&_edata - (uint32_t)&_sdata;
-	uint8_t *flash_data = (uint8_t*) &_etext;
+	uint8_t *flash_data = (uint8_t*) &_sidata;
 	uint8_t *sram_data = (uint8_t*) &_sdata;
 
 	for (uint32_t i = 0; i < data_size; i++) {
@@ -117,5 +118,6 @@ void reset_handler(void) {
 		bss[i] = 0;
 	}
 
+	__libc_init_array();
 	main();
 }
