@@ -2,5 +2,8 @@
 - [[P1-Button]]
 [[Part 2]]
 
+[[clock-config]]
+
+
 [[STM32G070xx]]
 [[gdb]]
