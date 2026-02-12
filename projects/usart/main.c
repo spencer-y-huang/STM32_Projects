@@ -1,8 +1,20 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "stm32g0xx.h"
+#include "ringbuf.h"
 
 #define LED_PIN 5
+
+#define RINGBUF_SIZE (128)
+
+volatile char rb_buf[RINGBUF_SIZE + 1];
+ringbuf rb = {
+	len: RINGBUF_SIZE,
+	buf: rb_buf,
+	pos: 0,
+	ext: 0
+};
+volatile int newline = 0;
 
 void start_timer(void);
 
@@ -74,11 +86,13 @@ void main(void) {
 	GPIOA->OTYPER &= ~GPIO_OTYPER_OT2;
 	GPIOA->OTYPER &= ~GPIO_OTYPER_OT3;
 
-	// Set PA2, PA3 to use low speed
+	// Set PA2, PA3 to use high speed
 	GPIOA->OSPEEDR &= ~(0x3 << GPIO_OSPEEDR_OSPEED2_Pos);
 	GPIOA->OSPEEDR &= ~(0x3 << GPIO_OSPEEDR_OSPEED3_Pos);
+	GPIOA->OSPEEDR &= (0x2 << GPIO_OSPEEDR_OSPEED2_Pos);
+	GPIOA->OSPEEDR &= (0x2 << GPIO_OSPEEDR_OSPEED3_Pos);
 
-	uint16_t uartdiv = 64000000 / 9600;
+	uint16_t uartdiv = 64000000 / 115200;
 	//uint16_t uartdiv = 16000000 / 9600;
 	// set USART2 baud rate
 	USART2->BRR = uartdiv;
@@ -86,19 +100,39 @@ void main(void) {
 	// enable USART2
 	USART2->CR1 |= (USART_CR1_RE | USART_CR1_UE);
 
+	// Enable NVIC interrupt for USART2_IRQn
+	NVIC_SetPriority(USART2_IRQn, 0x02);
+	NVIC_EnableIRQ(USART2_IRQn);
+
 	// handle transmit enable (?)
 	USART2->CR1 |= USART_CR1_TE;
 	USART2->CR1 &= ~USART_CR1_TE;
 	//while(!(USART2->ISR & USART_ISR_TEACK));
 	USART2->CR1 |= USART_CR1_TE;
 
+	// enable USART2 interrupts
+	USART2->CR1 |= (USART_CR1_RXNEIE_RXFNEIE);
+
 	GPIOA->ODR ^= (1 << 5);
 
-	char rxb = '\0';
-	while(1) {
-		while(!(USART2->ISR & USART_ISR_RXNE_RXFNE));
-		rxb = USART2->RDR;
-		GPIOA->ODR ^= (1 << 5);
-		printf("RX: %c\r\n", rxb);
+	while(1) { 
+		while (newline == 0) {
+			__WFI();
+		}
+		while (rb.pos != rb.ext) {
+			putchar(ringbuf_read(&rb));
+		}
+		printf("\n");
+		newline = 0;
 	};
+}
+
+void usart2_handler(void) {
+	if(USART2->ISR & USART_ISR_RXNE_RXFNE){
+		char c = USART2->RDR;
+		ringbuf_write(&rb, c);
+		if(c == '\r') {
+			newline = 1;
+		}
+	}
 }
