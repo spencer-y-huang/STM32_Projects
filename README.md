@@ -7,11 +7,11 @@ Projects using the STM32 NUCLEO-G070RB board.
 	* [X] Use interrupts tied into the button to change the timer interval.
 	* [-] Implement debouncing for the button interrupt.
 	* [X] Properly configure PLL to set clock speed to max
-* [o] USART - implement USART tutorial to allow board to send messages to host PC
+* [O] USART - implement USART tutorial to allow board to send messages to host PC
 	* [X] Get USART working with simple echo
 	* [X] alter `_write` syscall to use printf w/USART
-	* [ ] add a ring buffer for reads
-	* [ ] enable hardware interrupts for reads
+	* [X] add a ring buffer for reads
+	* [X] enable hardware interrupts for reads
 	* [ ] debug weird clock issue with USART_ISR_TEACK
 * [.] ssd - use a Diligent PmodSSD seven segment display
 	* [X] can turn on segments of display

@@ -114,11 +114,14 @@ void main(void) {
 	USART2->CR1 |= (USART_CR1_RXNEIE_RXFNEIE);
 
 	GPIOA->ODR ^= (1 << 5);
+	for(int i = 0; i < 1000; i++);
+	GPIOA->ODR ^= (1 << 5);
 
 	while(1) { 
 		while (newline == 0) {
 			__WFI();
 		}
+		GPIOA->ODR &= ~(1 << 5);
 		while (rb.pos != rb.ext) {
 			putchar(ringbuf_read(&rb));
 		}
@@ -129,6 +132,7 @@ void main(void) {
 
 void usart2_handler(void) {
 	if(USART2->ISR & USART_ISR_RXNE_RXFNE){
+		GPIOA->ODR |= (1 << 5);
 		char c = USART2->RDR;
 		ringbuf_write(&rb, c);
 		if(c == '\r') {
